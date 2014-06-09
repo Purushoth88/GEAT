@@ -26,20 +26,20 @@ public class GitUtilsTest {
         List<String> expected = new ArrayList<String>();
         expected.add("master");
 
-        List<String> listBranches = GitUtils.listBranches(git.getRepository(), ".*");
+        List<String> listBranches = GitUtils.listBranches(".*");
         Assert.assertEquals(expected, listBranches);
 
         git.branchCreate().setName("myBranch").call();
         git.branchCreate().setName("tagada").call();
 
-        listBranches = GitUtils.listBranches(git.getRepository(), "master");
+        listBranches = GitUtils.listBranches("master");
         Assert.assertEquals(expected, listBranches);
 
-        listBranches = GitUtils.listBranches(git.getRepository(), "ma.*");
+        listBranches = GitUtils.listBranches("ma.*");
         Assert.assertEquals(expected, listBranches);
 
         expected.add("myBranch");
-        listBranches = GitUtils.listBranches(git.getRepository(), "m.*");
+        listBranches = GitUtils.listBranches("m.*");
         Assert.assertEquals(expected, listBranches);
     }
 
@@ -116,6 +116,7 @@ public class GitUtilsTest {
                 .setURI(remote.getRepository().getDirectory().getParentFile().getAbsolutePath()).call();
 
         Git git = Git.open(tempDir);
+        System.setProperty("user.dir", tempDir.getAbsolutePath());
         Assert.assertTrue(GitUtils.hasRemoteBranch(git.getRepository(), "theBranch"));
         GitUtils.callFetch(git.getRepository(), "theBranch");
         Assert.assertTrue(GitUtils.hasLocalBranch(git.getRepository(), "theBranch"));
@@ -144,6 +145,7 @@ public class GitUtilsTest {
                 .setURI(remote.getRepository().getDirectory().getParentFile().getAbsolutePath()).call();
 
         Git git = Git.open(tempDir);
+        System.setProperty("user.dir", tempDir.getAbsolutePath());
         Assert.assertTrue(GitUtils.hasRemoteBranch(git.getRepository(), "theBranch"));
 
         Assert.assertFalse(GitUtils.hasRemoteBranch(git.getRepository(), "secondBranch"));
@@ -169,6 +171,7 @@ public class GitUtilsTest {
         remote.branchCreate().setName("secondBranch").call();
 
         File tempDir = Files.createTempDir();
+        System.setProperty("user.dir", tempDir.getAbsolutePath());
         Git.cloneRepository().setDirectory(tempDir).setRemote("origin")
                 .setURI(remote.getRepository().getDirectory().getParentFile().getAbsolutePath()).call();
 
@@ -224,6 +227,7 @@ public class GitUtilsTest {
                 .setURI(remote.getRepository().getDirectory().getParentFile().getAbsolutePath()).call();
 
         Git git = Git.open(tempDir);
+        System.setProperty("user.dir", tempDir.getAbsolutePath());
         Assert.assertTrue(GitUtils.hasRemoteBranch(git.getRepository(), "theBranch"));
 
         Assert.assertFalse(GitUtils.hasRemoteBranch(git.getRepository(), "secondBranch"));

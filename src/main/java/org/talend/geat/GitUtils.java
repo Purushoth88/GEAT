@@ -22,11 +22,11 @@ import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.transport.RefSpec;
 import org.eclipse.jgit.transport.RemoteConfig;
+import org.eclipse.jgit.transport.URIish;
 import org.talend.geat.commands.MergePolicy;
 import org.talend.geat.exception.IncorrectRepositoryStateException;
 import org.talend.geat.exception.InterruptedCommandException;
 import org.talend.geat.exception.NotRemoteException;
-import org.talend.geat.jgit.ListBranchCommand;
 
 import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
@@ -36,6 +36,23 @@ import com.google.common.io.Files;
  * Utility class to mutualize some current GIT operation.
  */
 public class GitUtils {
+
+    public static URIish getRemoteUrl(String remoteName) {
+        try {
+            Git git = Git.open(new File(System.getProperty("user.dir")));
+            List<RemoteConfig> remoteConfigs = RemoteConfig.getAllRemoteConfigs(git.getRepository().getConfig());
+            for (RemoteConfig current : remoteConfigs) {
+                if (current.getName().equals(remoteName)) {
+                    return current.getURIs().get(0);
+                }
+            }
+        } catch (URISyntaxException e) {
+            System.out.println("WARN: " + e.getMessage());
+        } catch (IOException e) {
+            System.out.println("WARN: " + e.getMessage());
+        }
+        return null;
+    }
 
     public static boolean hasRemote(String remoteName, Repository repository) {
         try {
@@ -81,7 +98,7 @@ public class GitUtils {
      */
     public static boolean callFetch(Repository repository, String branch) throws GitAPIException, IOException,
             NotRemoteException {
-        Git git = new Git(repository);
+        MyGit git = MyGit.open();
 
         if (!hasRemoteBranch(repository, branch)) {
             throw new NotRemoteException("No remote branch '" + branch + "'. Cannot fetch it.");
@@ -113,26 +130,17 @@ public class GitUtils {
         return ref.getName();
     }
 
-    public static List<String> listBranches(Repository repository, final String pattern) throws GitAPIException {
+    public static List<String> listBranches(final String pattern) throws GitAPIException, IOException {
         Set<String> toReturn = new TreeSet<String>();
 
-        Git git = new Git(repository);
-        List<Ref> call = new ListBranchCommand(git.getRepository()).setListMode(ListMode.ALL).setPattern(pattern)
-                .call();
+        MyGit git = MyGit.open();
+        List<Ref> call = git.branchList2().setListMode(ListMode.ALL).setPattern(pattern).call();
 
         for (Ref ref : call) {
             toReturn.add(getShortName(ref));
         }
 
         return new ArrayList<String>(toReturn);
-    }
-
-    // TODO changes to junit
-    public static void main(String[] args) throws GitAPIException, IOException {
-        Git repo = Git.open(new File("/home/stephane/talend/checkouts/tac_save"));
-        for (String ref : listBranches(repo.getRepository(), "master|maintenance/.*")) {
-            System.out.println(ref);
-        }
     }
 
     public static String getBugfixBranchName(String startPoint, String bugName) {

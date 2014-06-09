@@ -95,8 +95,7 @@ public class BugfixFinish extends FeatureFinish {
      * 'bugfix/./bugname' exists.
      */
     private String guessTarget() throws IOException, GitAPIException, IllegalCommandArgumentException {
-        Git repo = Git.open(new File(getWorkingDir()));
-        List<String> branches = GitUtils.listBranches(repo.getRepository(), "bugfix/.*/" + featureName);
+        List<String> branches = GitUtils.listBranches("bugfix/.*/" + featureName);
         if (branches.isEmpty()) {
             throw new IllegalCommandArgumentException("No bugfix branch for bug '" + featureName + "'");
         } else if (branches.size() > 1) {

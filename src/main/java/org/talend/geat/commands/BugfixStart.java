@@ -1,11 +1,9 @@
 package org.talend.geat.commands;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.List;
 
-import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.MergeCommand.FastForwardMode;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Ref;
@@ -14,6 +12,7 @@ import org.talend.geat.Configuration;
 import org.talend.geat.GitConfiguration;
 import org.talend.geat.GitUtils;
 import org.talend.geat.InputsUtils;
+import org.talend.geat.MyGit;
 import org.talend.geat.SanityCheck;
 import org.talend.geat.SanityCheck.CheckLevel;
 import org.talend.geat.exception.IllegalCommandArgumentException;
@@ -82,10 +81,10 @@ public class BugfixStart extends Command {
             }
         }
 
-        Git repo = Git.open(new File(getWorkingDir()));
+        MyGit repo = MyGit.open();
 
         if (startPoint == null) {
-            List<String> listBranches = GitUtils.listBranches(repo.getRepository(), "master|maintenance/.*|release/.*");
+            List<String> listBranches = GitUtils.listBranches("master|maintenance/.*|release/.*");
             String defaultValue = GitConfiguration.getInstance().get("bugfixStartPoint");
             startPoint = InputsUtils.askUser("Select the branch to start from", listBranches, defaultValue);
         }
