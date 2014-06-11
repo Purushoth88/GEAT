@@ -78,7 +78,7 @@ public class GitUtils {
             return false;
         }
 
-        MyGit git = MyGit.open();
+        MyGit git = new MyGit(repository);
 
         Collection<Ref> lsRemoteBranches = git.lsRemote().setTags(false).setRemote("origin").call();
         for (Ref current : lsRemoteBranches) {
