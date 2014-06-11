@@ -8,6 +8,7 @@ import org.talend.geat.commands.Command;
 import org.talend.geat.commands.CommandsRegistry;
 import org.talend.geat.commands.Help;
 import org.talend.geat.commands.Version;
+import org.talend.geat.exception.IllegalCommandArgumentException;
 import org.talend.geat.exception.IncorrectRepositoryStateException;
 import org.talend.geat.exception.InterruptedCommandException;
 import org.talend.geat.security.CredentialsManager;
@@ -28,6 +29,10 @@ public class GeatMain {
             }
         } catch (IOException e) {
             // Should not occurs (check above in SanityCheck)
+        } catch (IllegalCommandArgumentException e) {
+            System.out.println(e.getMessage());
+            System.out.println("");
+            System.exit(1);
         }
 
         if (args.length < 1) {
@@ -63,7 +68,7 @@ public class GeatMain {
         System.exit(1);
     }
 
-    private static void initSsh() {
+    private static void initSsh() throws IllegalCommandArgumentException {
         CredentialsManager.init();
     }
 
