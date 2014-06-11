@@ -7,7 +7,9 @@ import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.errors.NoWorkTreeException;
+import org.talend.geat.exception.IllegalCommandArgumentException;
 import org.talend.geat.exception.IncorrectRepositoryStateException;
+import org.talend.geat.security.CredentialsManager;
 
 import com.google.common.base.Strings;
 
@@ -30,6 +32,7 @@ public class SanityCheck {
             return;
         }
 
+
         File repoPath = new File(workingDir);
         if (!repoPath.exists() || !repoPath.isDirectory()) {
             throw new IncorrectRepositoryStateException("'" + workingDir + "' is not a folder.");
@@ -40,6 +43,16 @@ public class SanityCheck {
             repo = Git.open(new File(workingDir));
         } catch (IOException e) {
             throw new IncorrectRepositoryStateException("'" + workingDir + "' is not a GIT repository.");
+        }
+
+        try {
+            if (GitUtils.hasRemote("origin", repo.getRepository())) {
+                CredentialsManager.init();
+            }
+        } catch (IllegalCommandArgumentException e) {
+            System.out.println(e.getMessage());
+            System.out.println("");
+            System.exit(1);
         }
 
         if (checkLevel.ordinal() >= CheckLevel.NO_UNCOMMITTED_CHANGES.ordinal()) {
