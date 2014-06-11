@@ -5,6 +5,7 @@ import java.io.IOException;
 
 import org.eclipse.jgit.api.FetchCommand;
 import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.LsRemoteCommand;
 import org.eclipse.jgit.api.PullCommand;
 import org.eclipse.jgit.api.PushCommand;
 import org.eclipse.jgit.lib.Repository;
@@ -52,6 +53,15 @@ public class MyGit extends Git {
 
     public ListBranchCommand branchList2() {
         ListBranchCommand command = new ListBranchCommand(getRepository());
+        return command;
+    }
+
+    @Override
+    public LsRemoteCommand lsRemote() {
+        LsRemoteCommand command = super.lsRemote();
+        if (credentialsProvider != null) {
+            command.setCredentialsProvider(credentialsProvider);
+        }
         return command;
     }
 

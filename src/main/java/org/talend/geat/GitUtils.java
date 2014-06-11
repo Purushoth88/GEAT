@@ -72,13 +72,13 @@ public class GitUtils {
         return repository.getRef(branch) != null;
     }
 
-    public static boolean hasRemoteBranch(Repository repository, String branch) throws GitAPIException {
+    public static boolean hasRemoteBranch(Repository repository, String branch) throws GitAPIException, IOException {
         boolean hasRemote = GitUtils.hasRemote("origin", repository);
         if (!hasRemote) {
             return false;
         }
 
-        Git git = new Git(repository);
+        MyGit git = MyGit.open();
 
         Collection<Ref> lsRemoteBranches = git.lsRemote().setTags(false).setRemote("origin").call();
         for (Ref current : lsRemoteBranches) {
