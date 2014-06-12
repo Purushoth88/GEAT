@@ -6,7 +6,6 @@ import java.io.IOException;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.junit.Assert;
-import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -15,7 +14,6 @@ import org.talend.geat.JUnitUtils;
 import org.talend.geat.exception.IllegalCommandArgumentException;
 import org.talend.geat.exception.IncorrectRepositoryStateException;
 import org.talend.geat.exception.InterruptedCommandException;
-import org.talend.geat.security.CredentialsManager;
 
 import com.google.common.io.Files;
 
@@ -23,11 +21,6 @@ public class BugfixFinishTest {
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
-
-    @BeforeClass
-    public static void prepare() {
-        CredentialsManager.installed = true;
-    }
 
     @Test
     public void testParseArgsOk1() throws IllegalCommandArgumentException, GitAPIException, IOException {

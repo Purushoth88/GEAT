@@ -8,6 +8,9 @@ public class CredentialsFactory {
 
     public static CredentialsProviderBuilder getCredentialsProviderBuilder() {
         final URIish remoteUrl = GitUtils.getRemoteUrl("origin");
+        if (!remoteUrl.isRemote()) {
+            return new CredentialsProviderEmptyBuilder();
+        }
         if (isHttps(remoteUrl)) {
             return new CredentialsProviderHttpsBuilder();
         } else {

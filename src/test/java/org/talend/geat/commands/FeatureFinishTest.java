@@ -12,7 +12,6 @@ import org.talend.geat.JUnitUtils;
 import org.talend.geat.exception.IllegalCommandArgumentException;
 import org.talend.geat.exception.IncorrectRepositoryStateException;
 import org.talend.geat.exception.InterruptedCommandException;
-import org.talend.geat.security.CredentialsManager;
 
 import com.google.common.io.Files;
 
@@ -88,7 +87,6 @@ public class FeatureFinishTest {
     @Test
     public void testExecuteRemote() throws GitAPIException, IOException, IncorrectRepositoryStateException,
             InterruptedCommandException {
-        CredentialsManager.installed = true;
         // Prepare:
         Git remote = JUnitUtils.createTempRepo();
 
