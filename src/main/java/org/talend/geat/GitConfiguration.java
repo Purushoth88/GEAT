@@ -8,8 +8,6 @@ import java.util.Map.Entry;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.StoredConfig;
-import org.talend.geat.SanityCheck.CheckLevel;
-import org.talend.geat.exception.IncorrectRepositoryStateException;
 
 /**
  * Used to interact with git config.
@@ -28,12 +26,6 @@ public class GitConfiguration {
 
     public static GitConfiguration getInstance() {
         if (singleton == null) {
-            try {
-                SanityCheck.check(CheckLevel.GIT_REPO_ONLY);
-            } catch (IncorrectRepositoryStateException e) {
-                throw new IllegalStateException("Cannot read configuration (cause:" + e.getMessage() + ")");
-            }
-
             String workingDir = System.getProperty("user.dir");
             File workingDirFile = new File(workingDir);
 
