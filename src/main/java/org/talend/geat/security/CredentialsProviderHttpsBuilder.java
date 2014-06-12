@@ -27,7 +27,7 @@ public class CredentialsProviderHttpsBuilder implements CredentialsProviderBuild
     private String findPassword(String username) {
         String password = GitConfiguration.getInstance().get("httpspwd");
         if (password == null) {
-            password = InputsUtils.askUser("HTTPS pasword for [" + username + "]", null);
+            password = InputsUtils.askUser("HTTPS password for [" + username + "]", null);
             if (password != null
                     && InputsUtils.askUserAsBoolean("Do you want to save this password in your local gitconfig file")) {
                 GitConfiguration.getInstance().set(GitConfiguration.CONFIG_PREFIX, "httpspwd", password);
