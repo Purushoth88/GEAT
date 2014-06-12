@@ -17,6 +17,8 @@ import com.jcraft.jsch.UserInfo;
 
 public class CredentialsProviderSshBuilder implements CredentialsProviderBuilder {
 
+    private static String sshPassphrase;
+
     public void install() {
         final CredentialsProvider credentialsProvider = build();
 
@@ -32,7 +34,8 @@ public class CredentialsProviderSshBuilder implements CredentialsProviderBuilder
     }
 
     public CredentialsProvider build() {
-        final String sshPassphrase = findSshPassphrase();
+        final String sshPassphrase = (CredentialsProviderSshBuilder.sshPassphrase == null ? findSshPassphrase()
+                : CredentialsProviderSshBuilder.sshPassphrase);
         if (sshPassphrase == null) {
             System.out.println("WARN: SSH not set.");
             return null;

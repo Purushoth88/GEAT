@@ -10,13 +10,17 @@ import org.talend.geat.exception.IllegalCommandArgumentException;
 
 public class CredentialsProviderHttpsBuilder implements CredentialsProviderBuilder {
 
+    private static String password;
+
     public void install() throws IllegalCommandArgumentException {
         MyGit.credentialsProvider = build();
     }
 
     public CredentialsProvider build() throws IllegalCommandArgumentException {
         String username = GitConfiguration.getInstance().get("user.email");
-        String password = findPassword(username);
+        if (password == null || password.length() == 0) {
+            password = findPassword(username);
+        }
         if (password == null) {
             throw new IllegalCommandArgumentException("Password cannot be null");
         }
@@ -25,16 +29,16 @@ public class CredentialsProviderHttpsBuilder implements CredentialsProviderBuild
     }
 
     private String findPassword(String username) {
-        String password = GitConfiguration.getInstance().get("httpspwd");
-        if (password == null) {
-            password = InputsUtils.askUser("HTTPS password for [" + username + "]", null);
-            if (password != null
+        String toReturn = GitConfiguration.getInstance().get("httpspwd");
+        if (toReturn == null) {
+            toReturn = InputsUtils.askUser("HTTPS password for [" + username + "]", null);
+            if (toReturn != null
                     && InputsUtils.askUserAsBoolean("Do you want to save this password in your local gitconfig file")) {
-                GitConfiguration.getInstance().set(GitConfiguration.CONFIG_PREFIX, "httpspwd", password);
+                GitConfiguration.getInstance().set(GitConfiguration.CONFIG_PREFIX, "httpspwd", toReturn);
             }
         }
 
-        return password;
+        return toReturn;
     }
 
 }
