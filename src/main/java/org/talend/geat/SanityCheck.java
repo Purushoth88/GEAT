@@ -32,7 +32,6 @@ public class SanityCheck {
             return;
         }
 
-
         File repoPath = new File(workingDir);
         if (!repoPath.exists() || !repoPath.isDirectory()) {
             throw new IncorrectRepositoryStateException("'" + workingDir + "' is not a folder.");
