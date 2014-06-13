@@ -8,7 +8,6 @@ import java.util.Map.Entry;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.StoredConfig;
-import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 
 /**
  * Used to interact with git config.
@@ -31,8 +30,7 @@ public class GitConfiguration {
 
     public static GitConfiguration getInstance() {
         if (singleton == null) {
-            FileRepositoryBuilder frb = new FileRepositoryBuilder();
-            File workingDirFile = frb.findGitDir().getGitDir().getParentFile();
+            File workingDirFile = new File(GitUtils.getWorkingGit());
 
             try {
                 Git repo = Git.open(workingDirFile);

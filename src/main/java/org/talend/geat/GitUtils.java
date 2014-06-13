@@ -20,6 +20,7 @@ import org.eclipse.jgit.api.RebaseResult;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 import org.eclipse.jgit.transport.RefSpec;
 import org.eclipse.jgit.transport.RemoteConfig;
 import org.eclipse.jgit.transport.URIish;
@@ -37,9 +38,19 @@ import com.google.common.io.Files;
  */
 public class GitUtils {
 
+    public static String getWorkingGit() {
+        FileRepositoryBuilder frb = new FileRepositoryBuilder();
+        final File gitDir = frb.findGitDir().getGitDir();
+        if (gitDir == null) {
+            return null;
+        } else {
+            return gitDir.getParentFile().getAbsolutePath();
+        }
+    }
+
     public static URIish getRemoteUrl(String remoteName) {
         try {
-            Git git = Git.open(new File(System.getProperty("user.dir")));
+            Git git = Git.open(new File(getWorkingGit()));
             List<RemoteConfig> remoteConfigs = RemoteConfig.getAllRemoteConfigs(git.getRepository().getConfig());
             for (RemoteConfig current : remoteConfigs) {
                 if (current.getName().equals(remoteName)) {
@@ -330,7 +341,7 @@ public class GitUtils {
     }
 
     private static File getGeatConfigFolfer() {
-        File folder = new File(new File(System.getProperty("user.dir"), ".git"), ".geat");
+        File folder = new File(new File(getWorkingGit(), ".git"), ".geat");
         if (!folder.exists()) {
             folder.mkdir();
         }

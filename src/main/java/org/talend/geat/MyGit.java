@@ -21,7 +21,7 @@ public class MyGit extends Git {
     }
 
     public static MyGit open() throws IOException {
-        final Git open = Git.open(new File(System.getProperty("user.dir")));
+        final Git open = Git.open(new File(GitUtils.getWorkingGit()));
         return new MyGit(open.getRepository());
     }
 

@@ -86,10 +86,6 @@ public abstract class Command {
         }
     }
 
-    protected String getWorkingDir() {
-        return System.getProperty("user.dir");
-    }
-
     public Writer getWriter() {
         return writer;
     }

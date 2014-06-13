@@ -37,6 +37,11 @@ public class SanityCheck {
             throw new IncorrectRepositoryStateException("'" + workingDir + "' is not a folder.");
         }
 
+        workingDir = GitUtils.getWorkingGit();
+        if (workingDir == null) {
+            throw new IncorrectRepositoryStateException("'" + workingDir + "' is not a GIT repository.");
+        }
+
         Git repo = null;
         try {
             repo = Git.open(new File(workingDir));

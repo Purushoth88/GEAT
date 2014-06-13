@@ -1,5 +1,6 @@
 package org.talend.geat.commands;
 
+import java.io.File;
 import java.io.IOException;
 
 import org.eclipse.jgit.api.Git;
@@ -64,6 +65,28 @@ public class FeatureStartTest {
 
         CommandsRegistry.INSTANCE.getCommand(FeatureStart.NAME).parseArgs(new String[] { FeatureStart.NAME, "tagada" })
                 .setWriter(new DoNothingWriter()).run();
+    }
+
+    @Test
+    public void testIssue21() throws IllegalCommandArgumentException, GitAPIException, IOException,
+            IncorrectRepositoryStateException, InterruptedCommandException {
+        Git git = JUnitUtils.createTempRepo();
+        JUnitUtils.createInitialCommit(git, "file1");
+
+        File aFile = new File(git.getRepository().getDirectory().getAbsoluteFile().getParentFile(), "folder1");
+        aFile.mkdir();
+        git.add().addFilepattern("folder1").call();
+        git.commit().setMessage("Initial commit (add " + "folder1" + ")").call();
+        aFile = new File(aFile, "file2");
+        aFile.createNewFile();
+        git.add().addFilepattern("file2").call();
+        git.commit().setMessage("Initial commit (add " + "file2" + ")").call();
+        System.setProperty("user.dir", aFile.getParentFile().getAbsolutePath());
+        System.out.println(System.getProperty("user.dir"));
+
+        CommandsRegistry.INSTANCE.getCommand(FeatureStart.NAME)
+                .parseArgs(new String[] { FeatureStart.NAME, "theFeature" }).run();
+        Assert.assertTrue(GitUtils.hasLocalBranch(git.getRepository(), "feature/theFeature"));
     }
 
 }
