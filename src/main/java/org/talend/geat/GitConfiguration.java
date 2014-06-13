@@ -24,6 +24,10 @@ public class GitConfiguration {
 
     private StoredConfig            config;
 
+    public static void reset() {
+        singleton = null;
+    }
+
     public static GitConfiguration getInstance() {
         if (singleton == null) {
             String workingDir = System.getProperty("user.dir");
