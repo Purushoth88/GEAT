@@ -29,16 +29,17 @@ import com.google.common.base.Strings;
  */
 public class FeatureStart extends Command {
 
-    public static final String NAME = "feature-start";
+    protected static final String NAME = "feature-start";
 
-    protected String           featureName;
+    protected String              featureName;
 
     protected FeatureStart() {
         super();
     }
 
-    public String getCommandName() {
-        return NAME;
+    @Override
+    public CommandNames getNames() {
+        return new CommandNames(NAME, "fs");
     }
 
     public Command parseArgs(String[] args) throws IllegalCommandArgumentException {

@@ -28,9 +28,10 @@ public abstract class Command {
     }
 
     /**
-     * Used only to prints help.
+     * Returns names that this command will be associated with in registry. At least one name is required, few are
+     * allowed for shortcuts.
      */
-    public abstract String getCommandName();
+    public abstract CommandNames getNames();
 
     /**
      * Used only to prints help.
@@ -96,6 +97,20 @@ public abstract class Command {
     public Command setWriter(Writer writer) {
         this.writer = writer;
         return this;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        Command other = (Command) obj;
+        if (callable != other.callable) {
+            return false;
+        }
+        return true;
     }
 
 }

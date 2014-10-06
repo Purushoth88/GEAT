@@ -33,7 +33,7 @@ public class CommandTest {
         private String  aString = "default";
 
         @Override
-        public String getCommandName() {
+        public CommandNames getNames() {
             // TODO Auto-generated method stub
             return null;
         }

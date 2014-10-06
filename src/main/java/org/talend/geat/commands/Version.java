@@ -11,10 +11,14 @@ import org.talend.geat.SanityCheck.CheckLevel;
  */
 public class Version extends Command {
 
-    public static final String NAME = "version";
 
     protected Version() {
         super();
+    }
+
+    @Override
+    public CommandNames getNames() {
+        return new CommandNames("version", "vers", "vv");
     }
 
     @Override
@@ -33,10 +37,6 @@ public class Version extends Command {
 
     public String getDescription() {
         return "Displays GEAT version";
-    }
-
-    public String getCommandName() {
-        return NAME;
     }
 
 }

@@ -20,7 +20,7 @@ public class IllegalCommandArgumentException extends Exception {
         IllegalCommandArgumentException toReturn = new IllegalCommandArgumentException(
                 "Wrong number of parameters for this command!\nUsage is:\n"
                         + Strings.repeat(" ", Configuration.INSTANCE.getAsInt("geat.indentForCommandTemplates"))
-                        + command.getCommandName() + " " + command.getUsage());
+                        + command.getNames().getMainName() + " " + command.getUsage());
         return toReturn;
     }
 }

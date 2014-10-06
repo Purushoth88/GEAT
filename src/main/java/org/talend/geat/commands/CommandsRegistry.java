@@ -11,7 +11,7 @@ public class CommandsRegistry {
 
     private Map<String, Command>         commands        = new HashMap<String, Command>();
 
-    protected List<String>               orderedCommands = new ArrayList<String>();
+    protected List<Command>              orderedCommands = new ArrayList<Command>();
 
     private CommandsRegistry() {
         registerCommands();
@@ -31,23 +31,23 @@ public class CommandsRegistry {
     }
 
     private void registerCommands() {
-        commands.put(Help.NAME, new Help());
-        commands.put(Version.NAME, new Version());
-        commands.put(FeatureStart.NAME, new FeatureStart());
-        commands.put(FeatureFinish.NAME, new FeatureFinish());
-        commands.put(FeaturePush.NAME, new FeaturePush());
-        commands.put(FeaturePull.NAME, new FeaturePull());
-        commands.put(BugfixStart.NAME, new BugfixStart());
-        commands.put(BugfixFinish.NAME, new BugfixFinish());
+        registerCommand(new Help());
+        registerCommand(new Version());
+        registerCommand(new FeatureStart());
+        registerCommand(new FeatureFinish());
+        registerCommand(new FeaturePush());
+        registerCommand(new FeaturePull());
+        registerCommand(new BugfixStart());
+        registerCommand(new BugfixFinish());
+    }
 
-        orderedCommands.add(Help.NAME);
-        orderedCommands.add(Version.NAME);
-        orderedCommands.add(FeatureStart.NAME);
-        orderedCommands.add(FeatureFinish.NAME);
-        orderedCommands.add(FeaturePush.NAME);
-        orderedCommands.add(FeaturePull.NAME);
-        orderedCommands.add(BugfixStart.NAME);
-        orderedCommands.add(BugfixFinish.NAME);
+    private void registerCommand(Command command) {
+        commands.put(command.getNames().getMainName(), command);
+        commands.put(command.getClass().getCanonicalName(), command);
+        for (String name : command.getNames().getAlternateNames()) {
+            commands.put(name, command);
+        }
+        orderedCommands.add(command);
     }
 
     protected Map<String, Command> getCommands() {

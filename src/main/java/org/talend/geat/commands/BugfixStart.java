@@ -42,8 +42,9 @@ public class BugfixStart extends Command {
         super();
     }
 
-    public String getCommandName() {
-        return NAME;
+    @Override
+    public CommandNames getNames() {
+        return new CommandNames(NAME, "bs");
     }
 
     public Command parseArgs(String[] args) throws IllegalCommandArgumentException {

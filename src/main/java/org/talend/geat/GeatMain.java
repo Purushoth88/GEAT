@@ -40,9 +40,9 @@ public class GeatMain {
 
     private static void usage() {
         try {
-            CommandsRegistry.INSTANCE.getCommand(Version.NAME).run();
+            CommandsRegistry.INSTANCE.getCommand(Version.class.getCanonicalName()).run();
             System.out.println("\n");
-            CommandsRegistry.INSTANCE.getCommand(Help.NAME).run();
+            CommandsRegistry.INSTANCE.getCommand(Help.class.getCanonicalName()).run();
         } catch (Exception e) {
             // Should not occurs
         }

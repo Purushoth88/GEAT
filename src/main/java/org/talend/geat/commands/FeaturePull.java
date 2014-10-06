@@ -20,16 +20,15 @@ import com.google.common.base.Strings;
  */
 public class FeaturePull extends Command {
 
-    public static final String NAME = "feature-pull";
-
     protected String           featureName;
 
     protected FeaturePull() {
         super();
     }
 
-    public String getCommandName() {
-        return NAME;
+    @Override
+    public CommandNames getNames() {
+        return new CommandNames("feature-pull", "fpl");
     }
 
     public Command parseArgs(String[] args) throws IllegalCommandArgumentException {

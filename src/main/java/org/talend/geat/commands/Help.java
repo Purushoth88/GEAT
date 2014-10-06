@@ -10,10 +10,13 @@ import org.talend.geat.SanityCheck.CheckLevel;
  */
 public class Help extends Command {
 
-    public static final String NAME = "help";
-
     protected Help() {
         super();
+    }
+
+    @Override
+    public CommandNames getNames() {
+        return new CommandNames("help");
     }
 
     @Override
@@ -23,8 +26,15 @@ public class Help extends Command {
 
     public void execute(Writer writer) throws IOException {
         writer.write("Available commands are:");
-        for (String key : CommandsRegistry.INSTANCE.orderedCommands) {
-            writer.write(" - " + key + " - " + CommandsRegistry.INSTANCE.getCommand(key).getDescription());
+        for (Command command : CommandsRegistry.INSTANCE.orderedCommands) {
+            String desc = " - " + command.getNames().getMainName();
+            if (!command.getNames().getAlternateNames().isEmpty()) {
+                desc += " (or " + command.getNames().getAlternateNames()
+                        + ")";
+            }
+            desc += " - " + command.getDescription();
+
+            writer.write(desc);
         }
     }
 
@@ -34,10 +44,6 @@ public class Help extends Command {
 
     public String getDescription() {
         return "Displays this help";
-    }
-
-    public String getCommandName() {
-        return NAME;
     }
 
 }

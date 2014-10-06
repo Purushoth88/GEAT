@@ -24,18 +24,19 @@ import org.talend.geat.exception.InterruptedCommandException;
  */
 public class FeatureFinish extends Command {
 
-    public static final String NAME = "feature-finish";
+    protected static final String NAME = "feature-finish";
 
-    protected String           featureName;
+    protected String              featureName;
 
-    protected MergePolicy      mergePolicy;
+    protected MergePolicy         mergePolicy;
 
     protected FeatureFinish() {
         super();
     }
 
-    public String getCommandName() {
-        return NAME;
+    @Override
+    public CommandNames getNames() {
+        return new CommandNames(NAME, "ff");
     }
 
     public String getDescription() {
@@ -87,7 +88,7 @@ public class FeatureFinish extends Command {
         Git repo = Git.open(new File(getWorkingDir()));
 
         GitUtils.merge(writer, repo, featureName, GitConfiguration.getInstance().get("featurePrefix"), GitConfiguration
-                .getInstance().get("featureStartPoint"), "feature", mergePolicy, NAME);
+                .getInstance().get("featureStartPoint"), "feature", mergePolicy, getNames().getMainName());
     }
 
     public String getFeatureName() {

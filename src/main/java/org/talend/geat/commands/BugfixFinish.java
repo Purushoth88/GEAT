@@ -25,13 +25,18 @@ import org.talend.geat.exception.InterruptedCommandException;
  */
 public class BugfixFinish extends FeatureFinish {
 
-    public static final String NAME = "bugfix-finish";
+    protected static final String NAME = "bugfix-finish";
 
     // Optionnal param, only required if a bug with the same name exists based on different startpoints
     protected String           target;
 
     protected BugfixFinish() {
         super();
+    }
+
+    @Override
+    public CommandNames getNames() {
+        return new CommandNames(NAME, "bf");
     }
 
     public String getDescription() {

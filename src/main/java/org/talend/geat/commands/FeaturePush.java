@@ -20,16 +20,17 @@ import com.google.common.base.Strings;
  */
 public class FeaturePush extends Command {
 
-    public static final String NAME = "feature-push";
+    protected static final String NAME = "feature-push";
 
-    protected String           featureName;
+    protected String              featureName;
 
     protected FeaturePush() {
         super();
     }
 
-    public String getCommandName() {
-        return NAME;
+    @Override
+    public CommandNames getNames() {
+        return new CommandNames(NAME, "fps");
     }
 
     public Command parseArgs(String[] args) throws IllegalCommandArgumentException {
