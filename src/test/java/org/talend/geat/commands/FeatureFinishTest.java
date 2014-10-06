@@ -6,11 +6,7 @@ import java.io.IOException;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.talend.geat.GitConfiguration;
 import org.talend.geat.GitUtils;
 import org.talend.geat.JUnitUtils;
 import org.talend.geat.exception.IllegalCommandArgumentException;
@@ -19,18 +15,16 @@ import org.talend.geat.exception.InterruptedCommandException;
 
 import com.google.common.io.Files;
 
-public class FeatureFinishTest {
+public class FeatureFinishTest extends Bug21Test {
 
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
-
-    @Before
-    public void before() {
-        GitConfiguration.reset();
+    @Override
+    protected Command initCommandInstance() {
+        return new FeatureFinish();
     }
 
     @Test
-    public void testParseArgs1() throws IllegalCommandArgumentException, GitAPIException, IOException {
+    public void testParseArgs1() throws IllegalCommandArgumentException, GitAPIException, IOException,
+            IncorrectRepositoryStateException {
         FeatureFinish command = (FeatureFinish) createCommandInstance().parseArgs(
                 new String[] { "feature-finish", "myFeature", "rebase" });
         Assert.assertEquals("myFeature", command.featureName);
@@ -38,7 +32,8 @@ public class FeatureFinishTest {
     }
 
     @Test
-    public void testParseArgs2() throws IllegalCommandArgumentException, GitAPIException, IOException {
+    public void testParseArgs2() throws IllegalCommandArgumentException, GitAPIException, IOException,
+            IncorrectRepositoryStateException {
         FeatureFinish command = (FeatureFinish) createCommandInstance().parseArgs(
                 new String[] { "feature-finish", "myFeature", "squash" });
         Assert.assertEquals("myFeature", command.featureName);
@@ -46,7 +41,8 @@ public class FeatureFinishTest {
     }
 
     @Test
-    public void testParseArgsDefaultMergePolicy() throws GitAPIException, IOException, IllegalCommandArgumentException {
+    public void testParseArgsDefaultMergePolicy() throws GitAPIException, IOException, IllegalCommandArgumentException,
+            IncorrectRepositoryStateException {
         FeatureFinish command = createCommandInstance();
 
         command.parseArgs(new String[] { "feature-finish", "myFeature" });
@@ -157,23 +153,4 @@ public class FeatureFinishTest {
         return (FeatureFinish) CommandsRegistry.INSTANCE.getCommand(FeatureFinish.NAME);
     }
 
-    @Test
-    public void testIssue21() throws IllegalCommandArgumentException, GitAPIException, IOException {
-        thrown.expect(IllegalCommandArgumentException.class);
-        Git git = JUnitUtils.createTempRepo();
-        JUnitUtils.createInitialCommit(git, "file1");
-
-        File aFile = new File(git.getRepository().getDirectory().getAbsoluteFile().getParentFile(), "folder1");
-        aFile.mkdir();
-        git.add().addFilepattern("folder1").call();
-        git.commit().setMessage("Initial commit (add " + "folder1" + ")").call();
-        aFile = new File(aFile, "file2");
-        aFile.createNewFile();
-        git.add().addFilepattern("file2").call();
-        git.commit().setMessage("Initial commit (add " + "file2" + ")").call();
-        System.setProperty("user.dir", aFile.getParentFile().getAbsolutePath());
-
-        FeatureFinish command = (FeatureFinish) CommandsRegistry.INSTANCE.getCommand(FeatureFinish.NAME)
-                .parseArgs(new String[] { FeatureFinish.NAME });
-    }
 }

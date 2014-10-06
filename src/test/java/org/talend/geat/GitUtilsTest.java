@@ -11,15 +11,21 @@ import org.eclipse.jgit.api.errors.RefNotFoundException;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.StoredConfig;
 import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
+import org.talend.geat.exception.IncorrectRepositoryStateException;
 import org.talend.geat.exception.NotRemoteException;
 
 import com.google.common.io.Files;
 
 public class GitUtilsTest {
 
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
+
     @Test
-    public void testListBranches() throws IOException, GitAPIException {
+    public void testListBranches() throws IOException, GitAPIException, IncorrectRepositoryStateException {
         Git git = JUnitUtils.createTempRepo();
         createInitialCommit(git, "myFile");
 
@@ -106,7 +112,7 @@ public class GitUtilsTest {
     }
 
     @Test
-    public void testCallFetchWithLocal() throws GitAPIException, IOException, NotRemoteException {
+    public void testCallFetchWithLocal() throws GitAPIException, IOException, IncorrectRepositoryStateException {
         Git remote = JUnitUtils.createTempRepo();
         createInitialCommit(remote, "file1");
         remote.branchCreate().setName("theBranch").call();
@@ -135,7 +141,7 @@ public class GitUtilsTest {
     }
 
     @Test
-    public void testCallFetchNoLocal() throws GitAPIException, IOException, NotRemoteException {
+    public void testCallFetchNoLocal() throws GitAPIException, IOException, IncorrectRepositoryStateException {
         Git remote = JUnitUtils.createTempRepo();
         createInitialCommit(remote, "file1");
         remote.branchCreate().setName("theBranch").call();
@@ -164,7 +170,8 @@ public class GitUtilsTest {
     }
 
     @Test
-    public void testCallFetchWithLocalNoOtherBranches() throws GitAPIException, IOException, NotRemoteException {
+    public void testCallFetchWithLocalNoOtherBranches() throws GitAPIException, IOException,
+            IncorrectRepositoryStateException {
         Git remote = JUnitUtils.createTempRepo();
         createInitialCommit(remote, "file1");
         remote.branchCreate().setName("theBranch").call();
@@ -217,7 +224,8 @@ public class GitUtilsTest {
     }
 
     @Test
-    public void testCallFetchNoLocalNoOtherBranches() throws GitAPIException, IOException, NotRemoteException {
+    public void testCallFetchNoLocalNoOtherBranches() throws GitAPIException, IOException,
+            IncorrectRepositoryStateException {
         Git remote = JUnitUtils.createTempRepo();
         createInitialCommit(remote, "file1");
         remote.branchCreate().setName("theBranch").call();
@@ -255,7 +263,7 @@ public class GitUtilsTest {
     }
 
     @Test
-    public void testCallFetchNoRemote() throws GitAPIException, IOException {
+    public void testCallFetchNoRemote() throws GitAPIException, IOException, IncorrectRepositoryStateException {
         Git remote = JUnitUtils.createTempRepo();
         createInitialCommit(remote, "file1");
         remote.branchCreate().setName("theBranch").call();
@@ -274,16 +282,71 @@ public class GitUtilsTest {
     }
 
     @Test
-    public void testExtractRootFromBranchName() {
+    public void testExtractRootFromBranchName() throws IncorrectRepositoryStateException {
         Assert.assertEquals("master", GitUtils.extractRootFromBranchName("master"));
         Assert.assertEquals("5.4", GitUtils.extractRootFromBranchName("maintenance/5.4"));
         Assert.assertEquals("5.4.2", GitUtils.extractRootFromBranchName("release/5.4.2"));
     }
 
     @Test
-    public void testGetBugfixBranchName() {
+    public void testGetBugfixBranchName() throws IncorrectRepositoryStateException {
         Assert.assertEquals("bugfix/master/TDI-12000", GitUtils.getBugfixBranchName("master", "TDI-12000"));
         Assert.assertEquals("bugfix/5.4/TDI-12000", GitUtils.getBugfixBranchName("maintenance/5.4", "TDI-12000"));
         Assert.assertEquals("bugfix/5.4.2/TDI-12000", GitUtils.getBugfixBranchName("release/5.4.2", "TDI-12000"));
     }
+
+    @Test
+    public void testGetWorkingGitBasic() throws IOException, GitAPIException, IncorrectRepositoryStateException {
+        Git git = JUnitUtils.createTempRepo();
+        JUnitUtils.createInitialCommit(git, "file1");
+
+        File aFile = new File(git.getRepository().getDirectory().getAbsoluteFile().getParentFile(), "folder1");
+        aFile.mkdir();
+        git.add().addFilepattern("folder1").call();
+        git.commit().setMessage("Initial commit (add " + "folder1" + ")").call();
+        aFile = new File(aFile, "file2");
+        aFile.createNewFile();
+        git.add().addFilepattern("file2").call();
+        git.commit().setMessage("Initial commit (add " + "file2" + ")").call();
+
+        System.setProperty("user.dir", aFile.getParentFile().getAbsolutePath());
+
+        String workingGit = GitUtils.getWorkingGit();
+        Assert.assertEquals(git.getRepository().getDirectory().getParent(), workingGit);
+    }
+
+    @Test
+    public void testGetWorkingGitLevel2() throws IOException, GitAPIException, IncorrectRepositoryStateException {
+        Git git = JUnitUtils.createTempRepo();
+        JUnitUtils.createInitialCommit(git, "file1");
+
+        File aFile = new File(git.getRepository().getDirectory().getAbsoluteFile().getParentFile(), "folder1");
+        aFile.mkdir();
+        aFile = new File(aFile, "file2");
+        aFile.createNewFile();
+
+        aFile = new File(aFile.getParentFile(), "folder2");
+        aFile.mkdir();
+        aFile = new File(aFile, "file3");
+        aFile.createNewFile();
+
+        git.add().addFilepattern("folder1").call();
+        git.commit().setMessage("Initial commit").call();
+
+        System.setProperty("user.dir", aFile.getParentFile().getAbsolutePath());
+        // System.out.println(System.getProperty("user.dir"));
+
+        String workingGit = GitUtils.getWorkingGit();
+        // System.out.println(workingGit);
+        Assert.assertEquals(git.getRepository().getDirectory().getParent(), workingGit);
+    }
+
+    @Test
+    public void testGetWorkingGitOutside() throws IOException, GitAPIException, IncorrectRepositoryStateException {
+        thrown.expect(IncorrectRepositoryStateException.class);
+        System.setProperty("user.dir", System.getProperty("java.io.tmpdir"));
+
+        GitUtils.getWorkingGit();
+    }
+
 }

@@ -42,7 +42,7 @@ public class FeatureStart extends Command {
         return new CommandNames(NAME, "fs");
     }
 
-    public Command parseArgs(String[] args) throws IllegalCommandArgumentException {
+    protected Command innerParseArgs(String[] args) throws IllegalCommandArgumentException {
         if (args.length != 2) {
             throw IllegalCommandArgumentException.build(this);
         }

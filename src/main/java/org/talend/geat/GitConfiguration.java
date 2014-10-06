@@ -8,6 +8,7 @@ import java.util.Map.Entry;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.StoredConfig;
+import org.talend.geat.exception.IncorrectRepositoryStateException;
 
 /**
  * Used to interact with git config.
@@ -28,7 +29,7 @@ public class GitConfiguration {
         singleton = null;
     }
 
-    public static GitConfiguration getInstance() {
+    public static GitConfiguration getInstance() throws IncorrectRepositoryStateException {
         if (singleton == null) {
             File workingDirFile = new File(GitUtils.getWorkingGit());
 

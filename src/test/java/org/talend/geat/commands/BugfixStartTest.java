@@ -5,9 +5,7 @@ import java.io.IOException;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.junit.Assert;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.talend.geat.GitConfiguration;
 import org.talend.geat.GitUtils;
 import org.talend.geat.JUnitUtils;
@@ -16,13 +14,15 @@ import org.talend.geat.exception.IncorrectRepositoryStateException;
 import org.talend.geat.exception.InterruptedCommandException;
 import org.talend.geat.io.DoNothingWriter;
 
-public class BugfixStartTest {
+public class BugfixStartTest extends Bug21Test {
 
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
+    @Override
+    protected Command initCommandInstance() {
+        return new BugfixStart();
+    }
 
     @Test
-    public void testParseArgsOk1() throws IllegalCommandArgumentException {
+    public void testParseArgsOk1() throws IllegalCommandArgumentException, IncorrectRepositoryStateException {
         BugfixStart command = (BugfixStart) CommandsRegistry.INSTANCE.getCommand(BugfixStart.NAME).parseArgs(
                 new String[] { BugfixStart.NAME, "myBug" });
         Assert.assertEquals("myBug", command.bugName);
@@ -30,7 +30,7 @@ public class BugfixStartTest {
     }
 
     @Test
-    public void testParseArgsOk2() throws IllegalCommandArgumentException {
+    public void testParseArgsOk2() throws IllegalCommandArgumentException, IncorrectRepositoryStateException {
         BugfixStart command = (BugfixStart) CommandsRegistry.INSTANCE.getCommand(BugfixStart.NAME).parseArgs(
                 new String[] { BugfixStart.NAME, "myBug", "startpoint" });
         Assert.assertEquals("myBug", command.bugName);
@@ -38,14 +38,16 @@ public class BugfixStartTest {
     }
 
     @Test
-    public void testParseArgsWrongNumberArgs1() throws IllegalCommandArgumentException {
+    public void testParseArgsWrongNumberArgs1() throws IllegalCommandArgumentException,
+            IncorrectRepositoryStateException {
         thrown.expect(IllegalCommandArgumentException.class);
         CommandsRegistry.INSTANCE.getCommand(BugfixStart.NAME).parseArgs(
                 new String[] { BugfixStart.NAME, "myBug", "anotherParam", "oneMoreParam" });
     }
 
     @Test
-    public void testParseArgsWrongNumberArgs2() throws IllegalCommandArgumentException {
+    public void testParseArgsWrongNumberArgs2() throws IllegalCommandArgumentException,
+            IncorrectRepositoryStateException {
         thrown.expect(IllegalCommandArgumentException.class);
         CommandsRegistry.INSTANCE.getCommand(BugfixStart.NAME).parseArgs(new String[] { BugfixStart.NAME });
     }

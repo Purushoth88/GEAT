@@ -2,11 +2,12 @@ package org.talend.geat.security;
 
 import org.eclipse.jgit.transport.URIish;
 import org.talend.geat.GitUtils;
+import org.talend.geat.exception.IncorrectRepositoryStateException;
 
 
 public class CredentialsFactory {
 
-    public static CredentialsProviderBuilder getCredentialsProviderBuilder() {
+    public static CredentialsProviderBuilder getCredentialsProviderBuilder() throws IncorrectRepositoryStateException {
         final URIish remoteUrl = GitUtils.getRemoteUrl("origin");
         if (!remoteUrl.isRemote()) {
             return new CredentialsProviderEmptyBuilder();

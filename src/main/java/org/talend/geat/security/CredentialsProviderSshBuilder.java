@@ -10,6 +10,7 @@ import org.eclipse.jgit.transport.SshSessionFactory;
 import org.eclipse.jgit.transport.URIish;
 import org.talend.geat.GitConfiguration;
 import org.talend.geat.InputsUtils;
+import org.talend.geat.exception.IncorrectRepositoryStateException;
 
 import com.jcraft.jsch.Session;
 import com.jcraft.jsch.UserInfo;
@@ -19,7 +20,7 @@ public class CredentialsProviderSshBuilder implements CredentialsProviderBuilder
 
     private static String sshPassphrase;
 
-    public void install() {
+    public void install() throws IncorrectRepositoryStateException {
         final CredentialsProvider credentialsProvider = build();
 
         JschConfigSessionFactory sessionFactory = new JschConfigSessionFactory() {
@@ -33,7 +34,7 @@ public class CredentialsProviderSshBuilder implements CredentialsProviderBuilder
         SshSessionFactory.setInstance(sessionFactory);
     }
 
-    public CredentialsProvider build() {
+    public CredentialsProvider build() throws IncorrectRepositoryStateException {
         final String sshPassphrase = (CredentialsProviderSshBuilder.sshPassphrase == null ? findSshPassphrase()
                 : CredentialsProviderSshBuilder.sshPassphrase);
         if (sshPassphrase == null) {
@@ -64,7 +65,7 @@ public class CredentialsProviderSshBuilder implements CredentialsProviderBuilder
         return provider;
     }
 
-    private String findSshPassphrase() {
+    private String findSshPassphrase() throws IncorrectRepositoryStateException {
         String sshPassphrase = GitConfiguration.getInstance().get("sshpassphrase");
         if (sshPassphrase == null) {
             sshPassphrase = InputsUtils.askUser("SSH passphrase, leave empty to skip", null);

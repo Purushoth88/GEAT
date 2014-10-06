@@ -9,6 +9,7 @@ import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.talend.geat.exception.IncorrectRepositoryStateException;
 
 import com.google.common.io.Files;
 
@@ -18,7 +19,7 @@ public class GitConfigurationTest {
     public ExpectedException thrown = ExpectedException.none();
 
     // @Test
-    public void testNonInit() throws GitAPIException {
+    public void testNonInit() throws GitAPIException, IncorrectRepositoryStateException {
         thrown.expect(IllegalStateException.class);
 
         File tempDir = Files.createTempDir();
@@ -29,7 +30,7 @@ public class GitConfigurationTest {
     }
 
     @Test
-    public void testInit() throws IOException, GitAPIException {
+    public void testInit() throws IOException, GitAPIException, IncorrectRepositoryStateException {
         File tempDir = Files.createTempDir();
 
         System.setProperty("user.dir", tempDir.getAbsolutePath());

@@ -10,6 +10,7 @@ import org.eclipse.jgit.api.PullCommand;
 import org.eclipse.jgit.api.PushCommand;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.transport.CredentialsProvider;
+import org.talend.geat.exception.IncorrectRepositoryStateException;
 import org.talend.geat.jgit.ListBranchCommand;
 
 public class MyGit extends Git {
@@ -20,7 +21,7 @@ public class MyGit extends Git {
         super(repo);
     }
 
-    public static MyGit open() throws IOException {
+    public static MyGit open() throws IOException, IncorrectRepositoryStateException {
         final Git open = Git.open(new File(GitUtils.getWorkingGit()));
         return new MyGit(open.getRepository());
     }

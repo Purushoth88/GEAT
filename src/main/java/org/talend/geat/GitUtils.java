@@ -38,17 +38,17 @@ import com.google.common.io.Files;
  */
 public class GitUtils {
 
-    public static String getWorkingGit() {
+    public static String getWorkingGit() throws IncorrectRepositoryStateException {
         FileRepositoryBuilder frb = new FileRepositoryBuilder();
         final File gitDir = frb.findGitDir().getGitDir();
         if (gitDir == null) {
-            return null;
+            throw new IncorrectRepositoryStateException("You're not in a GIT repository");
         } else {
             return gitDir.getParentFile().getAbsolutePath();
         }
     }
 
-    public static URIish getRemoteUrl(String remoteName) {
+    public static URIish getRemoteUrl(String remoteName) throws IncorrectRepositoryStateException {
         try {
             Git git = Git.open(new File(getWorkingGit()));
             List<RemoteConfig> remoteConfigs = RemoteConfig.getAllRemoteConfigs(git.getRepository().getConfig());
@@ -108,7 +108,7 @@ public class GitUtils {
      *             if no remote branch name <branch> exists
      */
     public static boolean callFetch(Repository repository, String branch) throws GitAPIException, IOException,
-            NotRemoteException {
+            NotRemoteException, IncorrectRepositoryStateException {
         MyGit git = MyGit.open();
 
         if (!hasRemoteBranch(repository, branch)) {
@@ -141,7 +141,8 @@ public class GitUtils {
         return ref.getName();
     }
 
-    public static List<String> listBranches(final String pattern) throws GitAPIException, IOException {
+    public static List<String> listBranches(final String pattern) throws GitAPIException, IOException,
+            IncorrectRepositoryStateException {
         Set<String> toReturn = new TreeSet<String>();
 
         MyGit git = MyGit.open();
@@ -154,14 +155,15 @@ public class GitUtils {
         return new ArrayList<String>(toReturn);
     }
 
-    public static String getBugfixBranchName(String startPoint, String bugName) {
+    public static String getBugfixBranchName(String startPoint, String bugName)
+            throws IncorrectRepositoryStateException {
         String toReturn = GitConfiguration.getInstance().get("bugfixPrefix");
         toReturn += "/" + extractRootFromBranchName(startPoint);
         toReturn += "/" + bugName;
         return toReturn;
     }
 
-    protected static String extractRootFromBranchName(String branchName) {
+    protected static String extractRootFromBranchName(String branchName) throws IncorrectRepositoryStateException {
         if (branchName.startsWith(GitConfiguration.getInstance().get("maintenanceprefix"))) {
             return branchName.substring(GitConfiguration.getInstance().get("maintenanceprefix").length() + 1);
         } else if (branchName.startsWith(GitConfiguration.getInstance().get("releasePrefix"))) {
@@ -284,7 +286,7 @@ public class GitUtils {
      *             If was previously merging ANOTHER branch
      */
     private static boolean previouslyFinishingThisFeature(String featureName, Writer writer, String command)
-            throws IOException, InterruptedCommandException {
+            throws IOException, InterruptedCommandException, IncorrectRepositoryStateException {
         File mergeMarker = new File(getGeatConfigFolfer(), "MERGE");
         if (mergeMarker.exists()) {
             String readFirstLine = Files.readFirstLine(mergeMarker, Charsets.UTF_8);
@@ -323,7 +325,7 @@ public class GitUtils {
      * Used when a conflicts occurs during a merge|rebase operation.
      */
     private static void createMergeAbortedMarker(String source, String target, String name, MergePolicy mergePolicy,
-            String command) throws IOException, InterruptedCommandException {
+            String command) throws IOException, InterruptedCommandException, IncorrectRepositoryStateException {
         File mergeMarker = new File(getGeatConfigFolfer(), "MERGE");
         Files.createParentDirs(mergeMarker);
         Files.touch(mergeMarker);
@@ -340,7 +342,7 @@ public class GitUtils {
         throw ice;
     }
 
-    private static File getGeatConfigFolfer() {
+    private static File getGeatConfigFolfer() throws IncorrectRepositoryStateException {
         File folder = new File(new File(getWorkingGit(), ".git"), ".geat");
         if (!folder.exists()) {
             folder.mkdir();

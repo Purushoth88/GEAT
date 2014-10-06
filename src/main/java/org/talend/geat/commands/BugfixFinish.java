@@ -46,7 +46,8 @@ public class BugfixFinish extends FeatureFinish {
         return "<bugfix-name> [version] [policy]";
     }
 
-    public Command parseArgs(String[] args) throws IllegalCommandArgumentException {
+    protected Command innerParseArgs(String[] args) throws IllegalCommandArgumentException,
+            IncorrectRepositoryStateException {
         if (args.length < 2) {
             throw IllegalCommandArgumentException.build(this);
         }
@@ -98,7 +99,8 @@ public class BugfixFinish extends FeatureFinish {
      * Regarding existing bugfix branches for this bugname, try to guess the version. Works if only ONE branches like
      * 'bugfix/./bugname' exists.
      */
-    private String guessTarget() throws IOException, GitAPIException, IllegalCommandArgumentException {
+    private String guessTarget() throws IOException, GitAPIException, IllegalCommandArgumentException,
+            IncorrectRepositoryStateException {
         List<String> branches = GitUtils.listBranches("bugfix/.*/" + featureName);
         if (branches.isEmpty()) {
             throw new IllegalCommandArgumentException("No bugfix branch for bug '" + featureName + "'");
@@ -118,7 +120,8 @@ public class BugfixFinish extends FeatureFinish {
                 mergePolicy, NAME);
     }
 
-    public String extractStartpointFromBugName(String bugName) throws IllegalCommandArgumentException {
+    public String extractStartpointFromBugName(String bugName) throws IllegalCommandArgumentException,
+            IncorrectRepositoryStateException {
         String[] split = bugName.split("/");
         if (split.length != 3) {
             throw new IllegalCommandArgumentException("");

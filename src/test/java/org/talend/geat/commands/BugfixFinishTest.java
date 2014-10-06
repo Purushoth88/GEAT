@@ -6,9 +6,7 @@ import java.io.IOException;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.junit.Assert;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.talend.geat.GitUtils;
 import org.talend.geat.JUnitUtils;
 import org.talend.geat.exception.IllegalCommandArgumentException;
@@ -17,13 +15,16 @@ import org.talend.geat.exception.InterruptedCommandException;
 
 import com.google.common.io.Files;
 
-public class BugfixFinishTest {
+public class BugfixFinishTest extends Bug21Test {
 
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
+    @Override
+    protected Command initCommandInstance() {
+        return new BugfixFinish();
+    }
 
     @Test
-    public void testParseArgsOk1() throws IllegalCommandArgumentException, GitAPIException, IOException {
+    public void testParseArgsOk1() throws IllegalCommandArgumentException, GitAPIException, IOException,
+            IncorrectRepositoryStateException {
         Git git = JUnitUtils.createTempRepo();
         JUnitUtils.createInitialCommit(git, "file1");
         git.branchCreate().setName("bugfix/1.0/myBug").call();
@@ -36,7 +37,8 @@ public class BugfixFinishTest {
     }
 
     @Test
-    public void testParseArgsOk2() throws IllegalCommandArgumentException, GitAPIException, IOException {
+    public void testParseArgsOk2() throws IllegalCommandArgumentException, GitAPIException, IOException,
+            IncorrectRepositoryStateException {
         Git git = JUnitUtils.createTempRepo();
         JUnitUtils.createInitialCommit(git, "file1");
         git.branchCreate().setName("bugfix/1.0/myBug").call();
@@ -49,7 +51,8 @@ public class BugfixFinishTest {
     }
 
     @Test
-    public void testParseArgsOk3() throws IllegalCommandArgumentException, GitAPIException, IOException {
+    public void testParseArgsOk3() throws IllegalCommandArgumentException, GitAPIException, IOException,
+            IncorrectRepositoryStateException {
         Git git = JUnitUtils.createTempRepo();
         JUnitUtils.createInitialCommit(git, "file1");
         git.branchCreate().setName("bugfix/1.0/myBug").call();
@@ -62,7 +65,8 @@ public class BugfixFinishTest {
     }
 
     @Test
-    public void testParseArgsOk4() throws IllegalCommandArgumentException, GitAPIException, IOException {
+    public void testParseArgsOk4() throws IllegalCommandArgumentException, GitAPIException, IOException,
+            IncorrectRepositoryStateException {
         Git git = JUnitUtils.createTempRepo();
         JUnitUtils.createInitialCommit(git, "file1");
         git.branchCreate().setName("bugfix/1.0/myBug").call();
@@ -76,7 +80,8 @@ public class BugfixFinishTest {
     }
 
     @Test
-    public void testParseArgsOk5() throws IllegalCommandArgumentException, GitAPIException, IOException {
+    public void testParseArgsOk5() throws IllegalCommandArgumentException, GitAPIException, IOException,
+            IncorrectRepositoryStateException {
         Git git = JUnitUtils.createTempRepo();
         JUnitUtils.createInitialCommit(git, "file1");
         git.branchCreate().setName("bugfix/1.0/myBug").call();
@@ -90,7 +95,8 @@ public class BugfixFinishTest {
     }
 
     @Test
-    public void testParseArgsOkMaster1() throws IllegalCommandArgumentException, GitAPIException, IOException {
+    public void testParseArgsOkMaster1() throws IllegalCommandArgumentException, GitAPIException, IOException,
+            IncorrectRepositoryStateException {
         Git git = JUnitUtils.createTempRepo();
         JUnitUtils.createInitialCommit(git, "file1");
         git.branchCreate().setName("bugfix/master/myBug").call();
@@ -104,7 +110,8 @@ public class BugfixFinishTest {
     }
 
     @Test
-    public void testParseArgsOkMaster2() throws IllegalCommandArgumentException, GitAPIException, IOException {
+    public void testParseArgsOkMaster2() throws IllegalCommandArgumentException, GitAPIException, IOException,
+            IncorrectRepositoryStateException {
         Git git = JUnitUtils.createTempRepo();
         JUnitUtils.createInitialCommit(git, "file1");
         git.branchCreate().setName("bugfix/master/myBug").call();
@@ -117,7 +124,8 @@ public class BugfixFinishTest {
     }
 
     @Test
-    public void testParseArgsError1() throws IllegalCommandArgumentException, GitAPIException, IOException {
+    public void testParseArgsError1() throws IllegalCommandArgumentException, GitAPIException, IOException,
+            IncorrectRepositoryStateException {
         thrown.expect(IllegalCommandArgumentException.class);
         Git git = JUnitUtils.createTempRepo();
         JUnitUtils.createInitialCommit(git, "file1");
@@ -129,7 +137,8 @@ public class BugfixFinishTest {
     }
 
     @Test
-    public void testParseArgsError2() throws IllegalCommandArgumentException, GitAPIException, IOException {
+    public void testParseArgsError2() throws IllegalCommandArgumentException, GitAPIException, IOException,
+            IncorrectRepositoryStateException {
         thrown.expect(IllegalCommandArgumentException.class);
         Git git = JUnitUtils.createTempRepo();
         JUnitUtils.createInitialCommit(git, "file1");
@@ -141,7 +150,8 @@ public class BugfixFinishTest {
     }
 
     @Test
-    public void testParseArgsError3() throws IllegalCommandArgumentException, GitAPIException, IOException {
+    public void testParseArgsError3() throws IllegalCommandArgumentException, GitAPIException, IOException,
+            IncorrectRepositoryStateException {
         thrown.expect(IllegalCommandArgumentException.class);
         Git git = JUnitUtils.createTempRepo();
         JUnitUtils.createInitialCommit(git, "file1");
@@ -151,7 +161,8 @@ public class BugfixFinishTest {
     }
 
     @Test
-    public void testParseArgsError5() throws IllegalCommandArgumentException, GitAPIException, IOException {
+    public void testParseArgsError5() throws IllegalCommandArgumentException, GitAPIException, IOException,
+            IncorrectRepositoryStateException {
         thrown.expect(IllegalCommandArgumentException.class);
         Git git = JUnitUtils.createTempRepo();
         JUnitUtils.createInitialCommit(git, "file1");
@@ -161,7 +172,8 @@ public class BugfixFinishTest {
     }
 
     @Test
-    public void testExtractStartpointFromBugName() throws IllegalCommandArgumentException {
+    public void testExtractStartpointFromBugName() throws IllegalCommandArgumentException,
+            IncorrectRepositoryStateException {
         BugfixFinish com = new BugfixFinish();
         Assert.assertEquals("master", com.extractStartpointFromBugName("bugfix/master/TDI-12000"));
         Assert.assertEquals("maintenance/5.4", com.extractStartpointFromBugName("bugfix/5.4/TDI-12000"));
@@ -169,7 +181,8 @@ public class BugfixFinishTest {
     }
 
     @Test
-    public void testExtractStartpointFromBugNameError() throws IllegalCommandArgumentException {
+    public void testExtractStartpointFromBugNameError() throws IllegalCommandArgumentException,
+            IncorrectRepositoryStateException {
         thrown.expect(IllegalCommandArgumentException.class);
         BugfixFinish com = new BugfixFinish();
         com.extractStartpointFromBugName("TDI-12000");

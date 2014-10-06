@@ -62,7 +62,14 @@ public abstract class Command {
     protected abstract void execute(Writer writer) throws IncorrectRepositoryStateException, IOException,
             GitAPIException, InterruptedCommandException;
 
-    public Command parseArgs(String[] args) throws IllegalCommandArgumentException {
+    public final Command parseArgs(String[] args) throws IllegalCommandArgumentException,
+            IncorrectRepositoryStateException {
+        SanityCheck.check(getCheckLevel());
+        return innerParseArgs(args);
+    }
+
+    protected Command innerParseArgs(String[] args) throws IllegalCommandArgumentException,
+            IncorrectRepositoryStateException {
         return this;
     }
 

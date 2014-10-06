@@ -58,7 +58,7 @@ public class CommandTest {
         }
 
         @Override
-        public Command parseArgs(String[] args) throws IllegalCommandArgumentException {
+        protected Command innerParseArgs(String[] args) throws IllegalCommandArgumentException {
             aString = args[0];
             return this;
         }

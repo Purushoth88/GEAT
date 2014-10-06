@@ -43,11 +43,17 @@ public class FeatureFinish extends Command {
     }
 
     public String getUsage() {
-        return "<feature-name> [policy (squash|rebase), default="
-                + GitConfiguration.getInstance().get("finishmergemode") + "]";
+        String usage = "<feature-name> [policy (squash|rebase)";
+        try {
+            usage += ", default=" + GitConfiguration.getInstance().get("finishmergemode") + "]";
+        } catch (IncorrectRepositoryStateException e) {
+            // May occurs if out of a GIT repo
+        }
+        return usage;
     }
 
-    public Command parseArgs(String[] args) throws IllegalCommandArgumentException {
+    protected Command innerParseArgs(String[] args) throws IllegalCommandArgumentException,
+            IncorrectRepositoryStateException {
         if (args.length < 2) {
             throw IllegalCommandArgumentException.build(this);
         }

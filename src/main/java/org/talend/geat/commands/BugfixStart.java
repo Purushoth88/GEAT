@@ -47,7 +47,7 @@ public class BugfixStart extends Command {
         return new CommandNames(NAME, "bs");
     }
 
-    public Command parseArgs(String[] args) throws IllegalCommandArgumentException {
+    protected Command innerParseArgs(String[] args) throws IllegalCommandArgumentException {
         if (args.length != 2 && args.length != 3) {
             throw IllegalCommandArgumentException.build(this);
         }

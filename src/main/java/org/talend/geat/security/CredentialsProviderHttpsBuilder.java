@@ -6,17 +6,18 @@ import org.talend.geat.GitConfiguration;
 import org.talend.geat.InputsUtils;
 import org.talend.geat.MyGit;
 import org.talend.geat.exception.IllegalCommandArgumentException;
+import org.talend.geat.exception.IncorrectRepositoryStateException;
 
 
 public class CredentialsProviderHttpsBuilder implements CredentialsProviderBuilder {
 
     private static String password;
 
-    public void install() throws IllegalCommandArgumentException {
+    public void install() throws IllegalCommandArgumentException, IncorrectRepositoryStateException {
         MyGit.credentialsProvider = build();
     }
 
-    public CredentialsProvider build() throws IllegalCommandArgumentException {
+    public CredentialsProvider build() throws IllegalCommandArgumentException, IncorrectRepositoryStateException {
         String username = GitConfiguration.getInstance().get("user.email");
         if (password == null || password.length() == 0) {
             password = findPassword(username);
@@ -28,7 +29,7 @@ public class CredentialsProviderHttpsBuilder implements CredentialsProviderBuild
         return new UsernamePasswordCredentialsProvider(username, password);
     }
 
-    private String findPassword(String username) {
+    private String findPassword(String username) throws IncorrectRepositoryStateException {
         String toReturn = GitConfiguration.getInstance().get("httpspwd");
         if (toReturn == null) {
             toReturn = InputsUtils.askUser("HTTPS password for [" + username + "]", null);
